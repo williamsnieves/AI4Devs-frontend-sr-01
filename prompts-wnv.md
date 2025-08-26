@@ -355,3 +355,5 @@ Integrate the Position Kanban with backend endpoints using **TypeScript, React, 
 
 
 Please stick to the current implementation we have right now and avoid to add things out of the requirements
+
+NOTE: The rest of the prompt was a normal conversation to fix some issues I encountered during the iteration. The first issue was converting the result I got from Lovable to match the project’s structure. Other important issues involved applying the drag-and-drop behavior, which I fixed by iterating in the conversation and sharing some screenshots to explain where the issues occurred.
