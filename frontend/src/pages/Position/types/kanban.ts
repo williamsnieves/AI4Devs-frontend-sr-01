@@ -30,6 +30,9 @@ export interface Candidate {
   fullName: string;
   currentInterviewStep: string;
   averageScore: number;
+  // Backend integration fields
+  originalId?: number;
+  applicationId?: number;
 }
 
 export interface Phase {

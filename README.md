@@ -79,7 +79,8 @@ cd frontend
 npm start
 ```
 
-The backend server will be running at http://localhost:3010, and the frontend will be available at http://localhost:3000.
+The backend server will be running at ente
+http://localhost:3010, and the frontend will be available at http://localhost:3000.
 
 ## Docker y PostgreSQL
 

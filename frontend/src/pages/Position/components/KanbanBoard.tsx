@@ -14,14 +14,13 @@ import { Position, Candidate } from "../types/kanban";
 
 interface KanbanBoardProps {
   position: Position;
-  onPositionUpdate?: (position: Position) => void;
+  onCandidateMove?: (candidateId: string, stepId: string) => Promise<void>;
 }
 
 export const KanbanBoard = ({
   position,
-  onPositionUpdate,
+  onCandidateMove,
 }: KanbanBoardProps) => {
-  const [phases, setPhases] = useState(position.phases);
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(
     null
   );
@@ -36,126 +35,61 @@ export const KanbanBoard = ({
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    console.log("🎯 Drag Start - activeId:", active.id);
+
     // Find the candidate being dragged
-    for (const phase of phases) {
+    for (const phase of position.phases) {
       const candidate = phase.candidates.find((c) => c.id === active.id);
       if (candidate) {
+        console.log("✅ Found candidate:", candidate.fullName);
         setActiveCandidate(candidate);
         break;
       }
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveCandidate(null);
 
-    if (!over) return;
+    console.log("🎯 Drag End - activeId:", active.id, "overId:", over?.id);
+
+    if (!over) {
+      console.log("❌ No drop target");
+      return;
+    }
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    // Find source and target
-    let sourcePhaseIndex = -1;
-    let sourceCandidateIndex = -1;
-    let targetPhaseIndex = -1;
+    // Find target phase ID
+    let targetPhaseId = overId;
 
-    // Find source
-    for (let i = 0; i < phases.length; i++) {
-      const candidateIndex = phases[i].candidates.findIndex(
-        (c) => c.id === activeId
+    // If dropping on a candidate, find its phase
+    if (overId.startsWith("candidate-")) {
+      const targetPhase = position.phases.find((phase) =>
+        phase.candidates.some((c) => c.id === overId)
       );
-      if (candidateIndex !== -1) {
-        sourcePhaseIndex = i;
-        sourceCandidateIndex = candidateIndex;
-        break;
+      if (targetPhase) {
+        targetPhaseId = targetPhase.id;
+        console.log("🔄 Dropping on candidate, target phase:", targetPhaseId);
       }
+    } else {
+      console.log("🎯 Dropping on phase:", targetPhaseId);
     }
 
-    // Find target phase (could be phase ID or candidate ID)
-    for (let i = 0; i < phases.length; i++) {
-      if (phases[i].id === overId) {
-        targetPhaseIndex = i;
-        break;
+    // Use backend integration
+    if (onCandidateMove) {
+      console.log("🚀 Calling onCandidateMove:", activeId, "->", targetPhaseId);
+      try {
+        await onCandidateMove(activeId, targetPhaseId);
+        console.log("✅ Move completed successfully");
+      } catch (error) {
+        console.error("❌ Failed to move candidate:", error);
+        // Error handling is done in the hook
       }
-      // If dropping on a candidate, find its phase
-      if (phases[i].candidates.some((c) => c.id === overId)) {
-        targetPhaseIndex = i;
-        break;
-      }
-    }
-
-    if (sourcePhaseIndex === -1 || targetPhaseIndex === -1) return;
-
-    setPhases((currentPhases) => {
-      const newPhases = [...currentPhases];
-
-      // Get the candidate being moved
-      const draggedCandidate =
-        newPhases[sourcePhaseIndex].candidates[sourceCandidateIndex];
-
-      // Safety check
-      if (!draggedCandidate) {
-        return currentPhases;
-      }
-
-      // Remove from source
-      newPhases[sourcePhaseIndex] = {
-        ...newPhases[sourcePhaseIndex],
-        candidates: newPhases[sourcePhaseIndex].candidates.filter(
-          (c) => c.id !== activeId
-        ),
-      };
-
-      // Create updated candidate
-      const updatedCandidate = {
-        ...draggedCandidate,
-        currentInterviewStep: newPhases[targetPhaseIndex].name,
-      };
-
-      // If dropping on same phase, handle reordering
-      if (sourcePhaseIndex === targetPhaseIndex) {
-        const targetCandidateIndex = newPhases[
-          targetPhaseIndex
-        ].candidates.findIndex((c) => c.id === overId);
-
-        if (targetCandidateIndex !== -1) {
-          // Insert at specific position
-          const newCandidates = [...newPhases[targetPhaseIndex].candidates];
-          newCandidates.splice(targetCandidateIndex, 0, updatedCandidate);
-          newPhases[targetPhaseIndex] = {
-            ...newPhases[targetPhaseIndex],
-            candidates: newCandidates,
-          };
-        } else {
-          // Add to end
-          newPhases[targetPhaseIndex] = {
-            ...newPhases[targetPhaseIndex],
-            candidates: [
-              ...newPhases[targetPhaseIndex].candidates,
-              updatedCandidate,
-            ],
-          };
-        }
-      } else {
-        // Add to end of target phase
-        newPhases[targetPhaseIndex] = {
-          ...newPhases[targetPhaseIndex],
-          candidates: [
-            ...newPhases[targetPhaseIndex].candidates,
-            updatedCandidate,
-          ],
-        };
-      }
-
-      return newPhases;
-    });
-
-    // Notify parent
-    if (onPositionUpdate) {
-      setTimeout(() => {
-        onPositionUpdate({ ...position, phases });
-      }, 0);
+    } else {
+      console.log("⚠️ No onCandidateMove function provided");
     }
   };
 
@@ -166,7 +100,7 @@ export const KanbanBoard = ({
       onDragEnd={handleDragEnd}
     >
       <div className="kanban-board">
-        {phases.map((phase) => (
+        {position.phases.map((phase) => (
           <KanbanColumn key={phase.id} phase={phase} />
         ))}
       </div>

@@ -16,8 +16,12 @@ export const KanbanColumn = ({ phase }: KanbanColumnProps) => {
   });
 
   return (
-    <div className="kanban-column-wrapper">
-      <div className={`kanban-column ${isOver ? "drag-over" : ""}`}>
+    <div className="flex-1 min-w-0">
+      <div
+        className={`kanban-column ${isOver ? "drag-over" : ""}`}
+        role="list"
+        aria-label={`${phase.name} column with ${phase.candidates.length} candidates`}
+      >
         <div className="kanban-column-header">
           <h3 className="kanban-column-title">{phase.name}</h3>
           <p className="kanban-column-count">

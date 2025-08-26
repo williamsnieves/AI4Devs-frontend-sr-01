@@ -311,3 +311,47 @@ Let’s focus on improving these three points before moving forward with the bac
 Prompt #4
 
 It looks better visually; however, I still see that dragging the candidate between columns is not very smooth yet, and the four columns don’t all fit within the container. The idea is that on desktop, all four columns should fit inside the container, not push one column down as if the grid were only three columns. check screenshot
+
+Prompt #5
+Let’s review the tests added in /Users/williansnieves/Documents/practices/lidr-projects/AI4Devs-frontend-sr-01/frontend to update them — all 3 of them are currently failing.
+
+Prompt #6
+it is time to make it work with backend following next prompt
+
+# Backend Integration for Position Kanban
+
+## Goal
+Integrate the Position Kanban with backend endpoints using **TypeScript, React, React Router, Bootstrap 5, and Jest + React Testing Library**.
+
+## Endpoints
+- `GET /positions/:id/interviewFlow` → returns positionName and interviewSteps
+- `GET /positions/:id/candidates` → returns candidate list with currentInterviewStep and averageScore
+- `PUT /candidates/:id/stage` → updates candidate stage with `applicationId` and `currentInterviewStep` (new step id)
+
+## Tasks
+1. Create an **API client** (`api.ts`) with functions:
+   - `getInterviewFlow(positionId)`
+   - `getCandidates(positionId)`
+   - `updateCandidateStage(candidateId, newStepId)`
+2. Add **adapters** to normalize DTOs into view models (steps and candidates).
+3. Build a **hook** `usePositionBoard(positionId)` to:
+   - Fetch position + candidates
+   - Expose `{ loading, error, steps, candidatesByStep, moveCandidate }`
+   - Implement **optimistic updates** with rollback on error.
+4. Update Kanban UI:
+   - On drop, call `moveCandidate(candidateId, stepId)`
+   - Show error message if update fails
+5. Write **tests** (Jest + RTL, AAA):
+   - Load data and render correctly
+   - Move candidate and call PUT with correct args
+   - Rollback state on error
+   - Handle candidates with unknown steps (go to "Unassigned")
+
+## Constraints
+- Use **Bootstrap 5** utilities/components (no Tailwind)
+- Keep **strict TypeScript types**
+- Follow **SOLID, KISS, DRY**
+- No external DnD libraries (use native API)
+
+
+Please stick to the current implementation we have right now and avoid to add things out of the requirements
