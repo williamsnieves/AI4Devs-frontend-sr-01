@@ -1,0 +1,151 @@
+/* Position Kanban View Styles - Simplified */
+
+/* Kanban Board Layout */
+.kanban-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .kanban-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .kanban-board {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.kanban-column-wrapper {
+  height: 100%;
+}
+
+.kanban-column {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  min-height: 450px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.kanban-column.drag-over {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  border-width: 2px;
+  transform: scale(1.02);
+}
+
+.kanban-column-header {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.kanban-column-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  margin: 0;
+}
+
+.kanban-column-count {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin: 0.2rem 0 0 0;
+}
+
+.kanban-column-content {
+  min-height: 350px;
+}
+
+.empty-column-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6c757d;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* Candidate Card Styles */
+.candidate-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.candidate-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.candidate-card:active,
+.candidate-card.dragging {
+  cursor: grabbing;
+}
+
+.candidate-card.dragging {
+  opacity: 0.8;
+  transform: rotate(3deg) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.candidate-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #212529;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.score-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.1s ease;
+}
+
+.score-dot.filled {
+  background-color: #198754;
+}
+
+.score-dot.empty {
+  background-color: #dee2e6;
+  border: 1px solid #adb5bd;
+}
+
+.drag-handle {
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+
+.candidate-card:active .drag-handle {
+  cursor: grabbing;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .kanban-column {
+    min-height: 300px;
+  }
+}
